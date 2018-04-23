@@ -9,23 +9,41 @@ import picamera
 import pytumblr
 from fractions import Fraction
 import threading
-from threading import Thread
 
 
-def drumroll():
+def drumrolling():
     os.system(drumroll)
 
-def blinking():
-    for i in range(3):
+
+def blinking1():
+    for i in range(3): 
+    #blink LED 
+        GPIO.output(redLed, True)
+        sleep(0.1)
+        GPIO.output(redLed, False)
+        sleep(0.1)
         GPIO.output(yellowLed, True)
-        sleep(1)
+        sleep(0.1)
         GPIO.output(yellowLed, False)
-        sleep(1)
-    for i in range(3):
-        GPIO.output(yellowLed, True)
-        sleep(.25)
-        GPIO.output(yellowLed, False)
-        sleep(.25)
+        sleep(0.1)
+    sleep(0.2)
+
+def blinking2():    
+    for i in range(2): 
+        GPIO.output(redLed, True)
+        sleep(0.6)
+        GPIO.output(redLed, False)
+        sleep(0.6)
+    for i in range(5): 
+        GPIO.output(redLed, True)
+        sleep(0.2)
+        GPIO.output(redLed, False)
+        sleep(0.2)
+    GPIO.output(yellowLed, True)
+    GPIO.output(redLed, True)
+    sleep(1.2)
+    GPIO.output(yellowLed, False)
+    GPIO.output(redLed, False)
 
 def camera():
     camera.start_preview() #start camera preview      
@@ -63,18 +81,22 @@ def Loop():
         if input_state == True:
             print('Button Pressed')
             sleep(0.2)
+            blinking1()
             #if pressed blink yellow LED at two speeds
             #insert drumroll on different thread here
-            Thread(target = drumroll).start()
-            blinking()
-            for i in range(3):
+            thr = threading.Thread(target=drumrolling)
+            thr.start()
+            blinking2()
+            for i in range(5): #change to the number of pictures in gif
                 os.system(shutter)
-            camera()
+            #camera()
             print('uploading') #let us know photo is about to start uploading
 
-            GPIO.output(blueLed, True)
+            GPIO.output(yellowLed, True)
+            #tumblr() #uploading
+            sleep(1)
+            GPIO.output(yellowLed, False)
             os.system(partyhorn)
-            GPIO.output(blueLed, False)
     
     GPIO.cleanup() #cleanup GPIO channels
 
@@ -87,9 +109,9 @@ if __name__ == '__main__':
     drumroll = "mpg321 sounds/drumroll.mp3"
 
     #create variables to hold pin numbers
-    yellowLed = 17
-    blueLed = 27
     button = 18
+    yellowLed = 27 #put pin connected to the yellow LED in variable
+    redLed = 17
 
     # AuthenticateS via OAuth, copy from https://api.tumblr.com/console/calls/user/info
     client = pytumblr.TumblrRestClient(
@@ -102,8 +124,8 @@ if __name__ == '__main__':
     #set up pins
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-    GPIO.setup(yellowLed, GPIO.OUT)
-    GPIO.setup(blueLed, GPIO.OUT)
+    GPIO.setup(yellowLed, GPIO.OUT) #set the LED pin as output
+    GPIO.setup(redLed, GPIO.OUT)
 
     #camera = picamera.PiCamera() #initiate picamera module and class
     #camera.resolution = (640, 480) #set resolution of picture here
