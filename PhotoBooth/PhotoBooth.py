@@ -9,7 +9,7 @@ import picamera
 import pytumblr
 from fractions import Fraction
 import threading
-
+from api.py import *
 
 def drumrolling():
     os.system(drumroll)
