@@ -1,6 +1,7 @@
 # PhotoBooth Project
 
-hidden API-key-file api.py: 
+The file ```api.py``` is hidden via .gitignore and has to be recreated as it contains the  API-keys. 
+It's content should look like this:  
 
 ```
 # Here Go the API Keys
